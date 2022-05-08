@@ -49,13 +49,9 @@
     <Compile Include="GridEntry.cs" />
     <Compile Include="Group3PlayerAI\CardinalDirection.cs" />
     <Compile Include="Group3PlayerAI\Group3Player.cs" />
-    <Compile Include="Group3PlayerAI\NewTarget.cs" />
-    <Compile Include="Group3PlayerAI\NewPlayerData.cs" />
-    <Compile Include="MitchPlayer\CurrentTargetDirection.cs" />
-    <Compile Include="MitchPlayer\MitchAIPlayer.cs" />
-    <Compile Include="MitchPlayer\PlayerData.cs" />
-    <Compile Include="MitchPlayer\StatusType.cs" />
-    <Compile Include="MitchPlayer\Target.cs" />
+    <Compile Include="Group3PlayerAI\Target.cs" />
+    <Compile Include="Group3PlayerAI\PlayerData.cs" />
+    <Compile Include="Group3PlayerAI\StatusType.cs" />
     <Compile Include="IPlayer.cs" />
     <Compile Include="MultiPlayerBattleShip.cs" />
     <Compile Include="PlayMode.cs" />

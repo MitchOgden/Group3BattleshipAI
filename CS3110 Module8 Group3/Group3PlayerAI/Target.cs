@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Module8
 {
-    public class NewTarget
+    public class Target
     {
 
         public Position GridPosition { get; set; }
@@ -13,7 +13,7 @@ namespace Module8
 
 
         // Constructor that grabs the player index, the position reported as a hit, and the current state of the status grid.
-        public NewTarget(Position position)
+        public Target(Position position)
         {
             GridPosition = position;
         }

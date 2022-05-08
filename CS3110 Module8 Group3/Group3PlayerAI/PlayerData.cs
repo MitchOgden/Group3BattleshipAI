@@ -5,27 +5,27 @@ using System.Linq;
 
 namespace Module8
 {
-    public class NewPlayerData
+    public class PlayerData
     {
         public StatusType[,] StatusGrid { get; set; } // Used to store status values per grid point
         public int ShipsLeft { get; set; } // Counter from the value of ships left.
         public int Index { get; set; } // Store player index
         private int _gridSize;
-        public Stack<NewTarget> TargetStack { get; set; } // Store identified targets for this player
-        public NewTarget CurrentTarget;
+        public Stack<Target> TargetStack { get; set; } // Store identified targets for this player
+        public Target CurrentTarget;
         private List<Ship> _ships;
         private int[,] _probabilityGrid;
         private static readonly Random Random = new Random();
         
 
-        public NewPlayerData(int gridSize, Ships ships, AttackResult result)
+        public PlayerData(int gridSize, Ships ships, AttackResult result)
         {
             // Initialize variables with parameters 
             ShipsLeft = ships._ships.Count;
             Index = result.PlayerIndex;
             _ships = ships._ships;
             _gridSize = gridSize;
-            TargetStack = new Stack<NewTarget>();
+            TargetStack = new Stack<Target>();
             
             // Create status grid
             StatusGrid = new StatusType[gridSize, gridSize];
@@ -41,7 +41,7 @@ namespace Module8
             if (result.ResultType == AttackResultType.Hit)
             {
                 StatusGrid[result.Position.Y,result.Position.X] = StatusType.Hit;
-                TargetStack.Push(new NewTarget(result.Position));
+                TargetStack.Push(new Target(result.Position));
             }
             
             if (result.ResultType == AttackResultType.Miss)
@@ -245,7 +245,7 @@ namespace Module8
             if (result.ResultType == AttackResultType.Hit && StatusGrid[result.Position.Y, result.Position.X] != StatusType.Hit)
             {
                 StatusGrid[result.Position.Y, result.Position.X] = StatusType.Hit;
-                TargetStack.Push(new NewTarget(result.Position));
+                TargetStack.Push(new Target(result.Position));
             }
 
             if (result.ResultType == AttackResultType.Miss)

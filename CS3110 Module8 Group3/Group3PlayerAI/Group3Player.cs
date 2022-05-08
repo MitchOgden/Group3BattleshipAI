@@ -14,7 +14,7 @@ namespace Module8
         private bool _selfDestruct = false;
         private int _zeroZeroCounter = 0;
         private int _turnCounter = 1;
-        private List<NewPlayerData> _playersData;
+        private List<PlayerData> _playersData;
         private int _lowestShipCount = 0;
         private int _playerCount = 0;
         private List<int> _eliminatedPlayers = new List<int>();
@@ -172,13 +172,13 @@ namespace Module8
             if (_turnCounter == 1)
             {
                 // Initialize _playersData to player count
-                _playersData = new List<NewPlayerData>(results.Count+1);
+                _playersData = new List<PlayerData>(results.Count+1);
                 _playerCount = results.Count;
                 Debug.WriteLine($"{results.Count} Players are being added to _playersData");
                 foreach (var r in results)
                 {
                     Debug.WriteLine($"Player {r.PlayerIndex} has been added with an initial value of {r.ResultType} in it's status grid at ({r.Position.X},{r.Position.Y})");
-                    _playersData.Insert(r.PlayerIndex,new NewPlayerData(_gridSize,_ships, r));
+                    _playersData.Insert(r.PlayerIndex,new PlayerData(_gridSize,_ships, r));
                 }
             }
 
