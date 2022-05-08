@@ -11,8 +11,6 @@ namespace Module8
         private int _gridSize; // size of grid
         private Ships _ships; // size of grid
         private static readonly Random Random = new Random(); // used to randomize choices
-        private bool _selfDestruct = false;
-        private int _zeroZeroCounter = 0;
         private int _turnCounter = 1;
         private List<PlayerData> _playersData;
         private int _lowestShipCount = 0;
