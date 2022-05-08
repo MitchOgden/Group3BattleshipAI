@@ -15,6 +15,7 @@ namespace Module8
         public NewTarget CurrentTarget;
         private List<Ship> _ships;
         private int[,] _probabilityGrid;
+        private static readonly Random Random = new Random();
         
 
         public NewPlayerData(int gridSize, Ships ships, AttackResult result)
@@ -203,7 +204,9 @@ namespace Module8
                     }
                 } // End of vertical probability point assignment
 
-                // Find position with highest score 
+                List<Position> mostProbablePoints = new List<Position>();
+                
+                // Find positions with highest score 
                 for (int i = 0; i < _probabilityGrid.GetLength(0); i++)
                 {
                     for (int j = 0; j < _probabilityGrid.GetLength(1); j++)
@@ -212,12 +215,18 @@ namespace Module8
                         if (_probabilityGrid[i, j] > largestScore)
                         {
                             largestScore = _probabilityGrid[i, j];
-                            mostProbable = new Position(j, i);
+                            mostProbablePoints.Clear();
                         }
-
+                        else
+                        {
+                            mostProbablePoints.Add(new Position(j, i));
+                        }
                     }
                 }
                 
+                // Randomly pick from mostProbable points to prevent endless loop when shot isn't valid do to being our ship
+                mostProbable = mostProbablePoints[Random.Next(mostProbablePoints.Count)];
+
                 Debug.WriteLine($"Most probable position for player {Index} was ({mostProbable.X},{mostProbable.Y})");
                 return mostProbable;
         }

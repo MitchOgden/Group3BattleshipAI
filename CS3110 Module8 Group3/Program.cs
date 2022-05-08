@@ -10,7 +10,7 @@ namespace Module8
         {
             List<IPlayer> players = new List<IPlayer>();
             players.Add(new DumbPlayer("Dumb"));
-            players.Add(new RandomPlayer("Random"));
+            //players.Add(new RandomPlayer("Random"));
             players.Add(new DumbPlayer("Dumb Dog"));
             players.Add(new RandomPlayer("Random Cat"));
             players.Add(new AshleyAIPlayer("Ashley"));
