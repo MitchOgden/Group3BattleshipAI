@@ -16,6 +16,7 @@ namespace Module8
         private int _lowestShipCount = 0;
         private int _playerCount = 0;
         private List<int> _eliminatedPlayers = new List<int>();
+        private bool _dumbPlaying = true;
         
         // List of positions to take out dumb AIs first if they are in play
         private Stack<Position> _dumbBattleship = new Stack<Position>();
@@ -81,7 +82,7 @@ namespace Module8
         public Position GetAttackPosition()
         {
             // Eliminate any dumbAIs first
-            while (_dumbBattleship.Count > 0)
+            while (_dumbBattleship.Count > 0 && _dumbPlaying)
                 return _dumbBattleship.Pop();
             
             Position proposedPosition = new Position(0, 0);
@@ -164,8 +165,30 @@ namespace Module8
         // 
         public void SetAttackResults(List<AttackResult> results)
         {
-            
-            // On turn one when the attack results are received, create a list of PlayerData objects 
+            // Check if DumbAI is playing, if not disable attacks on the standard battleship positions
+            if (_dumbPlaying)
+            {
+                int hitCount = 0;
+                bool shotOnDumb = false;
+                foreach (var result in results)
+                {
+                    foreach (var position in _dumbBattleship)
+                    {
+                        if (result.Position.X == position.X && result.Position.Y == position.Y)
+                        {
+                            shotOnDumb = true;
+                            if (result.ResultType == AttackResultType.Hit)
+                                hitCount++;
+                        }
+                    }
+                }
+
+                if (shotOnDumb && hitCount == 0)
+                    _dumbPlaying = false;
+            }
+
+
+                // On turn one when the attack results are received, create a list of PlayerData objects 
             // to store a status and probability grid
             if (_turnCounter == 1)
             {
