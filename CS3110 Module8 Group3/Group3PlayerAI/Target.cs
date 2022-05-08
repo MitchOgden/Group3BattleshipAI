@@ -1,3 +1,7 @@
+// Target class
+//
+// Stores data for completing an attack sequence on a target
+
 using System;
 using System.Collections.Generic;
 

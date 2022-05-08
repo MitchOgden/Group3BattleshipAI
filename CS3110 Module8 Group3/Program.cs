@@ -9,16 +9,14 @@ namespace Module8
         static void Main(string[] args)
         {
             List<IPlayer> players = new List<IPlayer>();
-            players.Add(new DumbPlayer("Dumb"));
-            //players.Add(new RandomPlayer("Random"));
+
             players.Add(new DumbPlayer("Dumb Dog"));
             players.Add(new RandomPlayer("Random Cat"));
-            players.Add(new AshleyAIPlayer("Ashley"));
             players.Add(new Group3Player("Group3Player"));
             
 
             MultiPlayerBattleShip game = new MultiPlayerBattleShip(players);
-            game.Play(PlayMode.NoDelay);  // Play the game with this "play mode"
+            game.Play(PlayMode.Pause);  // Play the game with this "play mode"
         }
     }
 }

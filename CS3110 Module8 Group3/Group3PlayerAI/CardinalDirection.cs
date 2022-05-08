@@ -1,3 +1,5 @@
+// Declare enum for cardinal directions
+
 namespace Module8
 {
     public enum CardinalDirection

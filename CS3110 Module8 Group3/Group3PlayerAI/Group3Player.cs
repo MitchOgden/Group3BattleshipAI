@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Group3Player AI Class
+// @Authors: Mitchell Ogden & Ashley Varran
+// Our implementation of a battleship AI per the requirements
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,14 +15,14 @@ namespace Module8
         private int _gridSize; // size of grid
         private Ships _ships; // size of grid
         private static readonly Random Random = new Random(); // used to randomize choices
-        private int _turnCounter = 1;
+        private int _turnCounter = 1; // keep track of the current turn per the received attack results
         private List<PlayerData> _playersData;
-        private int _lowestShipCount = 0;
+        private int _lowestShipCount = 0; // Stores ship count related to most vulnerable player
         private int _playerCount = 0;
-        private List<int> _eliminatedPlayers = new List<int>();
-        private bool _dumbPlaying = true;
-        int totalLength = 0;
-        private List<Position> battleshipPositions = new List<Position>(5);
+        private List<int> _eliminatedPlayers = new List<int>(); // As players are eliminated store them here
+        private bool _dumbPlaying = true; // Flag to keep track of whether a DumbAI is currently playing
+        int totalLength = 0; // Number of spaces the passed in ship list will occupy
+        private List<Position> battleshipPositions = new List<Position>(5); // Stores posotions of our placed battleship for quick access
         
         // List of positions to take out dumb AIs first if they are in play
         private Stack<Position> _dumbBattleship = new Stack<Position>();
@@ -37,24 +41,15 @@ namespace Module8
         public int Index => _index;
 
 
-        // Logic to start new game
-        // **** TBD ****
-        // TBD: Does this properly reset if more than 1 game is played during runtime?
-        // (arrays need to be reset, etc.)
-        // **** TBD ****
+        // StartNewGame is called when a game starts and the player's index,
+        // the grid size, and the ships that will be placed have been set for the game.
+        
         public void StartNewGame(int playerIndex, int gridSize, Ships ships)
         {
             _gridSize = gridSize;
             _index = playerIndex;
             _lowestShipCount = ships._ships.Count;
             totalLength = ships._ships.Sum(ship => ship.Length);
-            
-            // **** TBD ****
-            // TBD: Find a 'smarter' way to place ships.
-            // Currently: this borrows from RandomPlayer, which just puts the ships in the grid in Random columns
-            //Note it cannot deal with the case where there's not enough columns
-            //for 1 per ship
-            // **** TBD ****
 
             // Add values to _dumbBattleship
             _dumbBattleship.Push(new Position(0,7));
@@ -62,6 +57,7 @@ namespace Module8
             _dumbBattleship.Push(new Position(2,7));
             _dumbBattleship.Push(new Position(3,7));
             
+            // Place ships vertically in a randomly selected column
             var availableColumns = new List<int>();
             for (int i = 0; i < gridSize; i++)
             {
@@ -96,7 +92,11 @@ namespace Module8
         }
 
 
-        // Method to intelligently find best spot to attack.
+        // GetAttackPosition will look to see if there is a current target
+        // If so, it will continue attacking the unknown spaces around the origina target point.
+        // If not, it will look to the the _targetStack to grab the next target in the list.
+        // If no target exists it will use MostProbablePosition to make a guess based on which spot has
+        // the best probability of having a ship placed in it.
         public Position GetAttackPosition()
         {
             // Eliminate any dumbAIs first
@@ -121,6 +121,8 @@ namespace Module8
                 }
             }
 
+            // In the event there is not a weak player(game is processing end game conditions), return (0,0)
+            // otherwise return next shot on the weakest position
             if (weakPlayer != -1)
             {
                 proposedPosition = _playersData[weakPlayer].NextShot();
@@ -130,11 +132,13 @@ namespace Module8
                 return new Position(0, 0);
             }
             
+            // Verify if the proposed position is not null and is valid per logic in IsValid()
             if (proposedPosition != null && IsValid(proposedPosition))
             {
                 return proposedPosition;
             }
             
+            // In the event that proposedPosition is null call itself again to get a valid shot
             return GetAttackPosition();
 
         }
@@ -169,7 +173,9 @@ namespace Module8
                         return false;
                 }
             }
-            else
+            // Once the number of spaces left to fire on would only allow for shots on our ships,
+            // allow any shots that don't sink the battleship
+            else 
             {
                 int hitsOnBattleship = 0;
                 bool shotOnBattleship = false;
@@ -185,29 +191,17 @@ namespace Module8
                     return false;
 
             }
-            /*
-            IEnumerable<ShipTypes> result = new List<ShipTypes>();
 
-            foreach (Ship s in _ships._ships)
-            {
-                result = from position in s.Positions
-                    where position.X == p.X && position.Y == p.Y
-                    select s.ShipType;
-            }
-
-            foreach (var r in result)
-                if (r == ShipTypes.Battleship)
-                    return false;
-            
-            */
             // If all the checks have passed, this spot is valid.
             return true;
 
         }
 
         // Method to log results throughout the game.
+        //
+        // Checks to see if DumbPlayer AI is playing by tracking the status of shots on the usual battleship placement.
         // 
-        // 
+        // Passes results to corresponding _playerData to be processed.
         public void SetAttackResults(List<AttackResult> results)
         {
             // Check if DumbAI is playing, if not disable attacks on the standard battleship positions

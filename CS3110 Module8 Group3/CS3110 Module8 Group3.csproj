@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AshleyPlayer\AshleyAIPlayer.cs" />
     <Compile Include="DumbPlayer\DumbPlayer.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="GridEntry.cs" />

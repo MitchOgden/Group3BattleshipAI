@@ -1,4 +1,8 @@
-﻿using System;
+﻿// PlayerData class
+//
+// Stores all data that happens with each player in the game
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,6 +22,7 @@ namespace Module8
         private static readonly Random Random = new Random();
         
 
+        // Constructor
         public PlayerData(int gridSize, Ships ships, AttackResult result)
         {
             // Initialize variables with parameters 
@@ -58,8 +63,6 @@ namespace Module8
 
         public Position NextShot()
         {
-            Position nextShot = null;
-            
             if (CurrentTarget != null)
             {
                 return AttackCurrentTarget();
@@ -84,25 +87,29 @@ namespace Module8
 
             if(nextShot == null)
             {
+                // Peeks at next target in stack, if it's already sank it pops it off the stack
                 while(TargetStack.Count > 0 && StatusGrid[TargetStack.Peek().GridPosition.Y, TargetStack.Peek().GridPosition.X] == StatusType.Sank)
                 {
                     TargetStack.Pop();
                 }
-
+                // While the target stack still has targets, set CurrentTarget to the next target
                 if (TargetStack.Count > 0)
                 {
                     CurrentTarget = TargetStack.Pop();
                 }
+                // Otherwise set CurrentTarget to null for logic below
                 else
                 {
                     CurrentTarget = null;
                 }
             }
 
+            // When CurrentTarget is null grab the most probable position
             if (CurrentTarget == null)
             {
                 nextShot = MostProbablePosition();
             }
+            // Otherwise return the next viable shot on the current target
             else
             {
                 nextShot = CurrentTarget.GetNextPosition(StatusGrid);
@@ -118,11 +125,9 @@ namespace Module8
         //    at (0,0) and check horizontally if the ship fits and if it does add a point
         //    to all positions the ship fits in in ProbabilityGrid.
         //
-        //    DO not apply points to positions that hold our ship until
-        //
         //    Do this process again for the next size ship that the player should have left.
         //
-        //    Return position from the list of positions with the highest score on the ProbabilityGrid.
+        //    Randomly Return position from the list of positions with the highest score on the ProbabilityGrid.
 
         
         private Position MostProbablePosition()
@@ -137,7 +142,7 @@ namespace Module8
             
             #if DEBUG
 
-            DebugStatusGrid();
+            DebugStatusGrid(); // Allows for viewing of the players status grid after each call to troubleshoot accuracy of the grid
 
             #endif
             
@@ -236,18 +241,22 @@ namespace Module8
         //
         public void ProcessResult(AttackResult result)
         {
+            // When a sunk status is reported and it is not already marked sunk, call SunkShip()
             if (result.ResultType == AttackResultType.Sank &&
                 StatusGrid[result.Position.Y, result.Position.X] != StatusType.Sank)
             {
                 SunkShip(result.SunkShip, result.Position);
             }
 
+            // When a hit status is reported and it is not already marked hit, create new target and hit to status grid
             if (result.ResultType == AttackResultType.Hit && StatusGrid[result.Position.Y, result.Position.X] != StatusType.Hit)
             {
                 StatusGrid[result.Position.Y, result.Position.X] = StatusType.Hit;
                 TargetStack.Push(new Target(result.Position));
             }
 
+            // When a miss status is reported log in the status grid and if there is a current target
+            // change attack direction to next direction. If it is already attacking west, pop the current target
             if (result.ResultType == AttackResultType.Miss)
             {
                 StatusGrid[result.Position.Y, result.Position.X] = StatusType.Miss;
@@ -479,6 +488,7 @@ namespace Module8
             ShipsLeft--;
         }
 
+        // Method to display the status grid for troubleshooting
         public void DebugStatusGrid()
         {
             Debug.WriteLine($"Player {Index} Status Grid");
