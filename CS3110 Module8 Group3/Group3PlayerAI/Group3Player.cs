@@ -17,6 +17,8 @@ namespace Module8
         private int _playerCount = 0;
         private List<int> _eliminatedPlayers = new List<int>();
         private bool _dumbPlaying = true;
+        int totalLength = 0;
+        private List<Position> battleshipPositions = new List<Position>(5);
         
         // List of positions to take out dumb AIs first if they are in play
         private Stack<Position> _dumbBattleship = new Stack<Position>();
@@ -45,6 +47,8 @@ namespace Module8
             _gridSize = gridSize;
             _index = playerIndex;
             _lowestShipCount = ships._ships.Count;
+            totalLength = ships._ships.Sum(ship => ship.Length);
+            
             // **** TBD ****
             // TBD: Find a 'smarter' way to place ships.
             // Currently: this borrows from RandomPlayer, which just puts the ships in the grid in Random columns
@@ -74,6 +78,20 @@ namespace Module8
                 // Pick a Y that fits
                 var y = Random.Next(gridSize - ship.Length);
                 ship.Place(new Position(x, y), Direction.Vertical);
+                
+                // Store BattleShip Positions
+                if (ship.IsBattleShip)
+                {
+                    Position start = new Position(x, y);
+                    Direction direction = Direction.Vertical;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        battleshipPositions.Add(new Position(start.Y, start.Y));
+                        if (direction == Direction.Horizontal) start.X++;
+                        if (direction == Direction.Vertical) start.Y++;
+                    }
+                }
+                    
             }
         }
 
@@ -140,6 +158,33 @@ namespace Module8
         // are on the grid.
         internal bool IsValid(Position p)
         {
+
+            // While the current turn count would allow for shots to be taken on spots that aren't the AIs ships
+            // 
+            if (_turnCounter < _gridSize * _gridSize - totalLength)
+            {
+                foreach (var position in battleshipPositions)
+                {
+                    if (p.X == position.X && p.Y == position.Y)
+                        return false;
+                }
+            }
+            else
+            {
+                int hitsOnBattleship = 0;
+                bool shotOnBattleship = false;
+                foreach (var position in battleshipPositions)
+                {
+                    if (_playersData[_index].StatusGrid[position.Y, position.X] == StatusType.Hit)
+                        hitsOnBattleship++;
+                    if (p.X == position.X && p.Y == position.Y)
+                        shotOnBattleship = true;
+                }
+
+                if (hitsOnBattleship == 3 && shotOnBattleship)
+                    return false;
+
+            }
             /*
             IEnumerable<ShipTypes> result = new List<ShipTypes>();
 
@@ -188,7 +233,7 @@ namespace Module8
             }
 
 
-                // On turn one when the attack results are received, create a list of PlayerData objects 
+            // On turn one when the attack results are received, create a list of PlayerData objects 
             // to store a status and probability grid
             if (_turnCounter == 1)
             {
