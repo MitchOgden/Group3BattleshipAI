@@ -89,14 +89,21 @@ namespace Module8
                     weakPlayer = _playersData[i].Index;
                 }
             }
-            
-            proposedPosition = _playersData[weakPlayer].NextShot();
 
-            if (proposedPosition != null && IsValid(proposedPosition))
+            if (weakPlayer != -1)
+            {
+                proposedPosition = _playersData[weakPlayer].NextShot();
+            }
+            else
+            {
+                return new Position(0, 0);
+            }
+            
+            if (proposedPosition != null)
             {
                 return proposedPosition;
             }
-
+            
             return GetAttackPosition();
 
         }

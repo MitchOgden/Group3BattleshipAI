@@ -319,7 +319,9 @@ namespace Module8
             
             // Check for hit positions north of the sunk point and add them to possiblePositions
             // until a position isn't a hit or we have all the hit positions we need for the shipLength
-            while (valid)
+            int loopCount = 0;
+            
+            while (valid && loopCount < shipLength)
             {
                 Debug.WriteLine($"PossiblePosition count before(north-while): {possiblePositions.Count}");
                 
@@ -343,17 +345,19 @@ namespace Module8
                 if (possiblePositions.Count == shipLength - 1 || possiblePositions.Count == 0)
                 {
                     valid = false;
+                    break;
                 }
                 
                 Debug.WriteLine($"PossiblePosition count after(north-while): {possiblePositions.Count}");
-
+                loopCount++;
             }
 
             valid = true; // Set back to true for next while
-
+            loopCount = 0;
+            
             // Check for hit positions south of the sunk point and add them to possiblePositions
             // until a position isn't a hit or we have all the hit positions we need for the shipLength
-            while (valid && possiblePositions.Count < shipLength-1)
+            while (valid && possiblePositions.Count < shipLength-1 && loopCount < shipLength)
             {
                 Debug.WriteLine($"PossiblePosition count before(south-while): {possiblePositions.Count}");
                 
@@ -381,11 +385,11 @@ namespace Module8
                     valid = false;
                 }
                 Debug.WriteLine($"PossiblePosition count after(south-while): {possiblePositions.Count}");
-
+                loopCount++;
             }
 
             valid = true; // Set back to true for next while
-
+            loopCount = 0;
             
             if (possiblePositions.Count < shipLength-1)
             {
@@ -393,7 +397,7 @@ namespace Module8
                 
                 // Check for hit positions west of the sunk point and add them to possiblePositions
                 // until a position isn't a hit or we have all the hit positions we need for the shipLength
-                while (valid)
+                while (valid && loopCount < shipLength)
                 {
                     
                     Debug.WriteLine($"PossiblePosition count before(left-while): {possiblePositions.Count}");
@@ -420,14 +424,15 @@ namespace Module8
                         valid = false;
                     }
                     Debug.WriteLine($"PossiblePosition count before(left-while): {possiblePositions.Count}");
-                    
+                    loopCount++;
                 }
 
                 valid = true; // Set back to true for next while
-
+                loopCount = 0;
+                
                 // Check for hit positions east of the sunk point and add them to possiblePositions
                 // until a position isn't a hit or we have all the hit positions we need for the shipLength
-                while (valid & possiblePositions.Count < shipLength-1)
+                while (valid & possiblePositions.Count < shipLength-1 && loopCount < shipLength)
                 {
                     
                     Debug.WriteLine($"PossiblePosition count before(right-while): {possiblePositions.Count}");
@@ -451,6 +456,7 @@ namespace Module8
                         
                     }
                     Debug.WriteLine($"PossiblePosition count after(right-while): {possiblePositions.Count}");
+                    loopCount++;
                 }
             }
             
