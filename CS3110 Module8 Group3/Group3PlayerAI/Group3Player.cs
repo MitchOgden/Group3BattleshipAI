@@ -18,6 +18,10 @@ namespace Module8
         private int _lowestShipCount = 0;
         private int _playerCount = 0;
         private List<int> _eliminatedPlayers = new List<int>();
+        
+        // List of positions to take out dumb AIs first if they are in play
+        private Stack<Position> _dumbBattleship = new Stack<Position>();
+
 
         // Constructor:
         public Group3Player(string name)
@@ -49,6 +53,12 @@ namespace Module8
             //for 1 per ship
             // **** TBD ****
 
+            // Add values to _dumbBattleship
+            _dumbBattleship.Push(new Position(0,7));
+            _dumbBattleship.Push(new Position(1,7));
+            _dumbBattleship.Push(new Position(2,7));
+            _dumbBattleship.Push(new Position(3,7));
+            
             var availableColumns = new List<int>();
             for (int i = 0; i < gridSize; i++)
             {
@@ -72,6 +82,10 @@ namespace Module8
         // Method to intelligently find best spot to attack.
         public Position GetAttackPosition()
         {
+            // Eliminate any dumbAIs first
+            while (_dumbBattleship.Count > 0)
+                return _dumbBattleship.Pop();
+            
             Position proposedPosition = new Position(0, 0);
             int weakPlayer = -1; // Stores must vulnerable player index
             
