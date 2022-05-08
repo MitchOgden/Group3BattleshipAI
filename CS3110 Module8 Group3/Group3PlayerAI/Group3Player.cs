@@ -113,7 +113,7 @@ namespace Module8
                 return new Position(0, 0);
             }
             
-            if (proposedPosition != null)
+            if (proposedPosition != null && IsValid(proposedPosition))
             {
                 return proposedPosition;
             }
@@ -141,37 +141,21 @@ namespace Module8
         // are on the grid.
         internal bool IsValid(Position p)
         {
-            if (p.X == 0 && p.Y == 0)
-                _zeroZeroCounter++;
-            
-            if (_zeroZeroCounter > 2)
-                if (p.X == 0 && p.Y == 0)
-                    _selfDestruct = true;
+            /*
+            IEnumerable<ShipTypes> result = new List<ShipTypes>();
 
-            // Self Destruct Protocol
-            if (!_selfDestruct)
+            foreach (Ship s in _ships._ships)
             {
-                IEnumerable<ShipTypes> result = new List<ShipTypes>();
-
-                foreach (Ship s in _ships._ships)
-                {
-                    result = from position in s.Positions
-                        where position.X == p.X && position.Y == p.Y
-                        select s.ShipType;
-                }
-
-                foreach (var r in result)
-                    if (r == ShipTypes.Battleship)
-                        return false;
-            }
-            
-
-            // Check to see if spot is on the grid
-            if (p.X < 0 || p.X >= _gridSize || p.Y < 0 || p.Y >= _gridSize)
-            {
-                return false;
+                result = from position in s.Positions
+                    where position.X == p.X && position.Y == p.Y
+                    select s.ShipType;
             }
 
+            foreach (var r in result)
+                if (r == ShipTypes.Battleship)
+                    return false;
+            
+            */
             // If all the checks have passed, this spot is valid.
             return true;
 
