@@ -15,6 +15,7 @@ namespace Module8
         public NewTarget CurrentTarget;
         private List<Ship> _ships;
         private int[,] _probabilityGrid;
+        
 
         public NewPlayerData(int gridSize, Ships ships, AttackResult result)
         {
@@ -23,6 +24,7 @@ namespace Module8
             Index = result.PlayerIndex;
             _ships = ships._ships;
             _gridSize = gridSize;
+            TargetStack = new Stack<NewTarget>();
             
             // Create status grid
             StatusGrid = new StatusType[gridSize, gridSize];
@@ -46,6 +48,66 @@ namespace Module8
                 StatusGrid[result.Position.Y,result.Position.X] = StatusType.Miss;
             }
 
+        }
+
+        // NextShot()
+        //
+        // Handles passing a next target up to the AI whether that be the next target or the next 
+        // most probable position.
+
+        public Position NextShot()
+        {
+            Position nextShot = null;
+            
+            if (CurrentTarget != null)
+            {
+                return AttackCurrentTarget();
+            }
+
+            if (TargetStack.Count > 0 && CurrentTarget == null)
+            {
+                CurrentTarget = TargetStack.Pop();
+                return AttackCurrentTarget();
+            }
+            
+            return MostProbablePosition();
+            
+        }
+        
+        // AttackCurrentTarget()
+        //
+        // Gets the next viable attack from the current target
+        public Position AttackCurrentTarget()
+        {
+            Position nextShot = CurrentTarget.GetNextPosition(StatusGrid);
+
+            if(nextShot == null)
+            {
+                while(TargetStack.Count > 0 && StatusGrid[TargetStack.Peek().GridPosition.Y, TargetStack.Peek().GridPosition.X] == StatusType.Sank)
+                {
+                    TargetStack.Pop();
+                }
+
+                if (TargetStack.Count > 0)
+                {
+                    CurrentTarget = TargetStack.Pop();
+                }
+                else
+                {
+                    CurrentTarget = null;
+                }
+            }
+
+            if (CurrentTarget == null)
+            {
+                nextShot = MostProbablePosition();
+            }
+            else
+            {
+                nextShot = CurrentTarget.GetNextPosition(StatusGrid);
+            }
+            
+            return nextShot;
         }
 
         //    MostProbablePosition(): 
@@ -160,7 +222,56 @@ namespace Module8
                 return mostProbable;
         }
 
-        
+        // ProcessResult()
+        //
+        //
+        public void ProcessResult(AttackResult result)
+        {
+            if (result.ResultType == AttackResultType.Sank &&
+                StatusGrid[result.Position.Y, result.Position.X] != StatusType.Sank)
+            {
+                SunkShip(result.SunkShip, result.Position);
+            }
+
+            if (result.ResultType == AttackResultType.Hit && StatusGrid[result.Position.Y, result.Position.X] != StatusType.Hit)
+            {
+                StatusGrid[result.Position.Y, result.Position.X] = StatusType.Hit;
+                TargetStack.Push(new NewTarget(result.Position));
+            }
+
+            if (result.ResultType == AttackResultType.Miss)
+            {
+                StatusGrid[result.Position.Y, result.Position.X] = StatusType.Miss;
+                switch (CurrentTarget.CurrentDirection)
+                {
+                    case CardinalDirection.North:
+                        CurrentTarget.CurrentDirection = CardinalDirection.East;
+                        break;
+                    case CardinalDirection.East:
+                        CurrentTarget.CurrentDirection = CardinalDirection.South;
+                        break;
+                    case CardinalDirection.South:
+                        CurrentTarget.CurrentDirection = CardinalDirection.West;
+                        break;
+                    case CardinalDirection.West:
+                        while(TargetStack.Count > 0 && StatusGrid[TargetStack.Peek().GridPosition.Y, TargetStack.Peek().GridPosition.X] == StatusType.Sank)
+                        {
+                            TargetStack.Pop();
+                        }
+
+                        if (TargetStack.Count > 0)
+                        {
+                            CurrentTarget = TargetStack.Pop();
+                        }
+                        else
+                        {
+                            CurrentTarget = null;
+                        }
+                        break;
+                }
+                    
+            }
+        }
         
         // SunkShip()
         //
