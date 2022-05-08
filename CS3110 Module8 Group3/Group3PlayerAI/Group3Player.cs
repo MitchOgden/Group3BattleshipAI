@@ -16,6 +16,8 @@ namespace Module8
         private int _turnCounter = 1;
         private List<NewPlayerData> _playersData;
         private int _lowestShipCount = 0;
+        private int _playerCount = 0;
+        private List<int> _eliminatedPlayers = new List<int>();
 
         // Constructor:
         public Group3Player(string name)
@@ -81,7 +83,7 @@ namespace Module8
             // Figure out most vulnerable player based on number of ships left
             for(int i = 0; i < _playersData.Count; i++)
             {
-                if (_playersData[i].ShipsLeft <= _lowestShipCount && _playersData[i].Index != Index)
+                if (_playersData[i].ShipsLeft <= _lowestShipCount && _playersData[i].Index != Index && !IsEliminated(_playersData[i].Index))
                 {
                     _lowestShipCount = _playersData[i].ShipsLeft;
                     weakPlayer = _playersData[i].Index;
@@ -90,7 +92,7 @@ namespace Module8
             
             proposedPosition = _playersData[weakPlayer].NextShot();
 
-            if (IsValid(proposedPosition))
+            if (proposedPosition != null && IsValid(proposedPosition))
             {
                 return proposedPosition;
             }
@@ -99,6 +101,20 @@ namespace Module8
 
         }
 
+        // IsEliminiated()
+        //
+        // Checks if a player has been eliminated
+        private bool IsEliminated(int playerIndex)
+        {
+            foreach (var player in _eliminatedPlayers)
+            {
+                if (playerIndex == player)
+                    return true;
+            }
+
+            return false;
+        }
+        
         // This method, given a position, checks if it is a valid spot at which to fire.
         // Valid spots do not contain the player's own ships, have not already been shot at, and
         // are on the grid.
@@ -151,7 +167,8 @@ namespace Module8
             if (_turnCounter == 1)
             {
                 // Initialize _playersData to player count
-                _playersData = new List<NewPlayerData>(results.Count);
+                _playersData = new List<NewPlayerData>(results.Count+1);
+                _playerCount = results.Count;
                 Debug.WriteLine($"{results.Count} Players are being added to _playersData");
                 foreach (var r in results)
                 {
@@ -159,7 +176,14 @@ namespace Module8
                     _playersData.Insert(r.PlayerIndex,new NewPlayerData(_gridSize,_ships, r));
                 }
             }
-            
+
+            // Check for removed players and add to eliminated players list
+            foreach (var r in results)
+            {
+                if(r.ResultType == AttackResultType.Sank && r.SunkShip == ShipTypes.Battleship)
+                    _eliminatedPlayers.Add(r.PlayerIndex);
+            }
+
             foreach (var r in results)
             {
                 _playersData[r.PlayerIndex].ProcessResult(r);

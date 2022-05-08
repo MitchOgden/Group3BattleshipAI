@@ -14,11 +14,11 @@ namespace Module8
             players.Add(new DumbPlayer("Dumb Dog"));
             players.Add(new RandomPlayer("Random Cat"));
             players.Add(new AshleyAIPlayer("Ashley"));
-            //players.Add(new MitchAIPlayer("Mitch"));
+            players.Add(new Group3Player("Group3Player"));
             
 
             MultiPlayerBattleShip game = new MultiPlayerBattleShip(players);
-            game.Play(PlayMode.Pause);  // Play the game with this "play mode"
+            game.Play(PlayMode.NoDelay);  // Play the game with this "play mode"
         }
     }
 }

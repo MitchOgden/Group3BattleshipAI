@@ -242,32 +242,37 @@ namespace Module8
             if (result.ResultType == AttackResultType.Miss)
             {
                 StatusGrid[result.Position.Y, result.Position.X] = StatusType.Miss;
-                switch (CurrentTarget.CurrentDirection)
-                {
-                    case CardinalDirection.North:
-                        CurrentTarget.CurrentDirection = CardinalDirection.East;
-                        break;
-                    case CardinalDirection.East:
-                        CurrentTarget.CurrentDirection = CardinalDirection.South;
-                        break;
-                    case CardinalDirection.South:
-                        CurrentTarget.CurrentDirection = CardinalDirection.West;
-                        break;
-                    case CardinalDirection.West:
-                        while(TargetStack.Count > 0 && StatusGrid[TargetStack.Peek().GridPosition.Y, TargetStack.Peek().GridPosition.X] == StatusType.Sank)
-                        {
-                            TargetStack.Pop();
-                        }
+                if(CurrentTarget != null){
+                    switch (CurrentTarget.CurrentDirection)
+                    {
+                        case CardinalDirection.North:
+                            CurrentTarget.CurrentDirection = CardinalDirection.East;
+                            break;
+                        case CardinalDirection.East:
+                            CurrentTarget.CurrentDirection = CardinalDirection.South;
+                            break;
+                        case CardinalDirection.South:
+                            CurrentTarget.CurrentDirection = CardinalDirection.West;
+                            break;
+                        case CardinalDirection.West:
+                            while (TargetStack.Count > 0 &&
+                                   StatusGrid[TargetStack.Peek().GridPosition.Y, TargetStack.Peek().GridPosition.X] ==
+                                   StatusType.Sank)
+                            {
+                                TargetStack.Pop();
+                            }
 
-                        if (TargetStack.Count > 0)
-                        {
-                            CurrentTarget = TargetStack.Pop();
-                        }
-                        else
-                        {
-                            CurrentTarget = null;
-                        }
-                        break;
+                            if (TargetStack.Count > 0)
+                            {
+                                CurrentTarget = TargetStack.Pop();
+                            }
+                            else
+                            {
+                                CurrentTarget = null;
+                            }
+
+                            break;
+                    }
                 }
                     
             }

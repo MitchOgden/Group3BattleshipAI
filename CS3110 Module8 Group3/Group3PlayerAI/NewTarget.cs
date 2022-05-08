@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Module8
@@ -52,7 +53,29 @@ namespace Module8
                     result = new Position(GridPosition.X + _wX, GridPosition.Y);
                 }
 
-                if (statGrid[result.Y, result.X] != StatusType.Unknown)
+                try
+                {
+                    if (statGrid[result.Y, result.X] != StatusType.Unknown)
+                    {
+                        switch (CurrentDirection)
+                        {
+                            case CardinalDirection.North:
+                                CurrentDirection = CardinalDirection.East;
+                                break;
+                            case CardinalDirection.East:
+                                CurrentDirection = CardinalDirection.South;
+                                break;
+                            case CardinalDirection.South:
+                                CurrentDirection = CardinalDirection.West;
+                                break;
+                            case CardinalDirection.West:
+                                result = null;
+                                _validPosition = true;
+                                break;
+                        }
+                    }
+                }
+                catch (IndexOutOfRangeException)
                 {
                     switch (CurrentDirection)
                     {
@@ -72,8 +95,17 @@ namespace Module8
                     }
                 }
 
-                if (statGrid[result.Y, result.X] == StatusType.Unknown)
+                try
+                {
+                    if(result != null)
+                        if (statGrid[result.Y, result.X] == StatusType.Unknown)
+                            _validPosition = true;
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    result = null;
                     _validPosition = true;
+                }
 
 
             } while (!_validPosition);
